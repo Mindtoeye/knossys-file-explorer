@@ -1,0 +1,66 @@
+{
+  "name": "knossys-file-explorer",
+  "version": "0.0.1",
+  "description": "A file manager component for the Knossys system, allowing users to see a file-system-like view of their cloud data",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "webpack --progress --config webpack.config.js",
+    "dev-build": "webpack --progress -d --config webpack.config.js",
+    "watch": "webpack --progress -d --config webpack.config.js --watch",
+    "start": "webpack-dev-server --mode development --progress --config webpack.config.js --host 0.0.0.0 --port 8075"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Mindtoeye/knossys-file-explorer.git"
+  },
+  "keywords": [
+    "react",
+    "npm",
+    "webpack"
+  ],
+  "author": "Knossys",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/Mindtoeye/knossys-file-explorer/issues"
+  },
+  "homepage": "https://github.com/Mindtoeye/knossys-file-explorer",
+  "devDependencies": {
+    "@babel/cli": "^7.16.0",
+    "@babel/preset-env": "^7.15.8",
+    "@babel/preset-react": "^7.16.0",
+    "@emotion/css": "^11.5.0",
+    "@knossys/knossys-ui-core": "^0.2.9",
+    "babel": "^6.23.0",
+    "babel-core": "^6.26.3",
+    "babel-loader": "^8.2.3",
+    "classnames": "^2.3.1",
+    "css-loader": "^6.5.1",
+    "draft-js": "^0.11.7",
+    "file-loader": "^6.2.0",
+    "html-webpack-plugin": "^5.5.0",
+    "is-hotkey": "^0.1.6",
+    "react": "^16.9.0",
+    "react-contenteditable": "^3.3.6",
+    "react-dom": "^16.12.0",
+    "react-icons": "^4.3.1",
+    "react-json-tree": "^0.15.0",
+    "react-tabs": "^3.2.2",
+    "sass": "^1.43.4",
+    "sass-loader": "^12.3.0",
+    "webpack": "^5.64.1",
+    "webpack-cli": "^4.9.1",
+    "webpack-dev-server": "^4.3.1"
+  },
+  "dependencies": {
+    "@fortawesome/fontawesome-svg-core": "^1.2.25",
+    "@fortawesome/free-solid-svg-icons": "^5.11.2",
+    "@fortawesome/react-fontawesome": "^0.1.5",
+    "@knossys/knossys-window-manager": "^0.0.3",
+    "history": "^4.10.1",
+    "immutable": "^4.0.0-rc.12",
+    "react-draggable": "^4.0.3",
+    "react-router-dom": "^4.3.1",
+    "style-loader": "^1.0.0"
+  }
+}
