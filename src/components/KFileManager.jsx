@@ -5,8 +5,13 @@ import ReactDOM from "react-dom";
 import { FaFile, FaFolder, FaFolderOpen } from 'react-icons/fa';
 import { MdAddLocation } from 'react-icons/md';
 import { IoMdAddCircleOutline } from 'react-icons/io';
+import { MdKeyboardArrowLeft, MdKeyboardArrowRight, MdKeyboardArrowUp, MdOutlineHome } from 'react-icons/md';
 
 import { KTree, KButton, KToolbar, KToolbarItem } from '@knossys/knossys-ui-core';
+
+import KDataTools from './utils/KDataTools';
+import KFileTable from './KFileTable';
+import KBreadCrumbMenu from './KBreadCrumbMenu';
 
 import './css/filemanager.css';
 
@@ -64,10 +69,12 @@ export class KFileManager extends React.Component {
   constructor(props) {
     super(props);
 
-    this.state={
-      selected: null
-    };
+    this.dataTools=new KDataTools ();
 
+    this.state={
+      selected: null,
+      data: this.generateData ()
+    };
 
     this.onTreeNodeSelect=this.onTreeNodeSelect.bind(this);
     this.onToolbarItemClick=this.onToolbarItemClick.bind(this);    
@@ -78,6 +85,40 @@ export class KFileManager extends React.Component {
    */  
   componentDidMount() {
     console.log ("componentDidMount()");
+
+    /*
+    this.setState ({
+      data: this.generateData ()
+    });
+    */
+  }
+
+  /**
+   *
+   */
+  generateData () {
+    let list=[];
+
+    let date=new Date();
+    let today=date.getDate();
+    let todayString=date.toDateString();
+
+    let keyCounter=0;
+    let simFiles=50;
+
+    for (let i=0;i<simFiles;i++) {
+      let simFile = {
+        name: this.dataTools.makeid(20),
+        type: "File",
+        created: todayString,
+        modified: todayString,
+        owner: "Anonymous"
+      };
+
+      list.push(simFile);
+    }
+
+    return (list);
   }
 
   /**
@@ -89,11 +130,15 @@ export class KFileManager extends React.Component {
 
     let selected=null;
 
+    /*
     if (anItem.type=='file') {
       if (anItem.content) {
         selected=anItem;
       }
     }
+    */
+
+    selected=anItem;
 
     this.setState ({
       selected: selected
@@ -117,20 +162,32 @@ export class KFileManager extends React.Component {
    */
   render () {
     return (<div className="kfilemanager-content ">
-      <div className="file-tree">
+      <div className="file-address">
 
-        <KToolbar classes="kdiagramtoolbar">
-          <KToolbarItem onClick={(e) => this.onToolbarItemClick (e,1)}><IoMdAddCircleOutline /></KToolbarItem>
-          <KToolbarItem onClick={(e) => this.onToolbarItemClick (e,2)}><FaFolder /></KToolbarItem>
-          <KToolbarItem onClick={(e) => this.onToolbarItemClick (e,3)}><FaFolderOpen /></KToolbarItem>
-          <KToolbarItem onClick={(e) => this.onToolbarItemClick (e,4)}><MdAddLocation /></KToolbarItem>
-        </KToolbar>
-
-        <KTree classes="moduletreeview" onSelect={this.onTreeNodeSelect} data={treeData} />
-        
+          <KToolbar style={{fontSize: "16pt"}}>
+            <KToolbarItem onClick={(e) => this.onToolbarItemClick (e,5)}><MdKeyboardArrowLeft /></KToolbarItem>
+            <KToolbarItem onClick={(e) => this.onToolbarItemClick (e,6)}><MdKeyboardArrowRight /></KToolbarItem>
+            <KToolbarItem onClick={(e) => this.onToolbarItemClick (e,7)}><MdKeyboardArrowUp /></KToolbarItem>
+            <KToolbarItem onClick={(e) => this.onToolbarItemClick (e,8)}><MdOutlineHome /></KToolbarItem>
+          </KToolbar>
+          <KBreadCrumbMenu source={this.state.selected} />
       </div>
-      <div className="file-list">
+      <div className="file-center">
+        <div className="file-tree">
 
+          <KToolbar>
+            <KToolbarItem onClick={(e) => this.onToolbarItemClick (e,1)}><IoMdAddCircleOutline /></KToolbarItem>
+            <KToolbarItem onClick={(e) => this.onToolbarItemClick (e,2)}><FaFolder /></KToolbarItem>
+            <KToolbarItem onClick={(e) => this.onToolbarItemClick (e,3)}><FaFolderOpen /></KToolbarItem>
+            <KToolbarItem onClick={(e) => this.onToolbarItemClick (e,4)}><MdAddLocation /></KToolbarItem>
+          </KToolbar>
+
+          <KTree classes="moduletreeview" onSelect={this.onTreeNodeSelect} data={treeData} />
+          
+        </div>
+        <div className="file-list">
+         <KFileTable data={this.state.data}/>
+        </div>
       </div>
     </div>);
   }
