@@ -2,7 +2,7 @@ import React from "react";
 import ReactDOM from "react-dom";
 
 // https://react-icons.github.io/react-icons/
-import { FaFile, FaFolder, FaFolderOpen } from 'react-icons/fa';
+import { FaFile, FaFolder, FaFolderOpen, FaAws } from 'react-icons/fa';
 import { MdAddLocation } from 'react-icons/md';
 import { IoMdAddCircleOutline } from 'react-icons/io';
 import { MdKeyboardArrowLeft, MdKeyboardArrowRight, MdKeyboardArrowUp, MdOutlineHome } from 'react-icons/md';
@@ -11,7 +11,9 @@ import { KTree, KButton, KToolbar, KToolbarItem } from '@knossys/knossys-ui-core
 
 import KDataTools from './utils/KDataTools';
 import KFileTable from './KFileTable';
+import KFileTableS3 from './KFileTableS3';
 import KBreadCrumbMenu from './KBreadCrumbMenu';
+import KFileUpload from './KFileUpload';
 
 import './css/filemanager.css';
 
@@ -63,6 +65,9 @@ const getNodeLabel = (node) => {
  */
 export class KFileManager extends React.Component {
 
+  static BACKEND_DEFAULT=0;
+  static BACKEND_S3=1;
+
   /**
    *
    */
@@ -73,7 +78,8 @@ export class KFileManager extends React.Component {
 
     this.state={
       selected: null,
-      data: this.generateData ()
+      data: this.generateData (),
+      type: KFileManager.BACKEND_S3
     };
 
     this.onTreeNodeSelect=this.onTreeNodeSelect.bind(this);
@@ -156,11 +162,21 @@ export class KFileManager extends React.Component {
     }
   }
 
- 
   /**
    *
    */
   render () {
+    let filetable;
+    let source="K";
+
+    if (this.state.type==KFileManager.BACKEND_S3) {
+      filetable=<KFileTableS3 data={this.state.data}/>;
+      source=<FaAws/>;
+    } else {
+      filetable=<KFileTable data={this.state.data}/>;
+      source="K";
+    }
+
     return (<div className="kfilemanager-content ">
       <div className="file-address">
 
@@ -171,6 +187,10 @@ export class KFileManager extends React.Component {
             <KToolbarItem onClick={(e) => this.onToolbarItemClick (e,8)}><MdOutlineHome /></KToolbarItem>
           </KToolbar>
           <KBreadCrumbMenu source={this.state.selected} />
+          <div className="file-hor-padding"></div>
+          <div className="file-source">
+          {source}  
+          </div>
       </div>
       <div className="file-center">
         <div className="file-tree">
@@ -182,11 +202,12 @@ export class KFileManager extends React.Component {
             <KToolbarItem onClick={(e) => this.onToolbarItemClick (e,4)}><MdAddLocation /></KToolbarItem>
           </KToolbar>
 
-          <KTree classes="moduletreeview" onSelect={this.onTreeNodeSelect} data={treeData} />
-          
+          <KTree classes="filetreeview" onSelect={this.onTreeNodeSelect} data={treeData} />
+
+          <KFileUpload />          
         </div>
         <div className="file-list">
-         <KFileTable data={this.state.data}/>
+        {filetable}
         </div>
       </div>
     </div>);

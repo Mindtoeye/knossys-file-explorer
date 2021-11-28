@@ -9,7 +9,7 @@
 }
 
 .file-address {
-  flex: 1;
+  flex: 0;
   background: #383838;
   display: flex;
   flex-direction: row;
@@ -30,19 +30,27 @@
   flex: 1;
   display: flex;
   flex-direction: row;  
+  overflow: hidden;
 }
 
 .file-tree {
   flex: 0;
   background: #504e4e;
   min-width: 200px;
+  display: flex;
+  flex-direction: column;
+}
+
+.filetreeview {
+  flex: 1;
 }
 
 .file-list {
-  flex:  1;
-  overflow: scroll;
+  flex: 1;
   font-family: Arial, Verdana;
-  font-size: 8pt;  
+  font-size: 8pt;
+  overflow-y: scroll;
+  overflow-x: hidden;
 }
 
 .kfilemanager-table {
@@ -90,4 +98,14 @@
   padding: 2px;
   flex: 0;
   overflow: hidden;
+}
+
+.file-hor-padding {
+  flex: 1;
+}
+
+.file-source {
+  flex: 0;
+  border: 1px;
+  font-size: 20pt;
 }

@@ -1,0 +1,15 @@
+
+.kfilemanager-upload {
+  background: #504e4e;
+  flex: 0;
+  min-height: 150px;
+  border-top: 1px solid #666666;
+  font-size: 39pt;
+  padding: 47px;
+  text-align: center;
+  color: #cdc9c9;
+}
+
+.kfilemanager-upload:hover {
+  color: white;
+}
