@@ -17,44 +17,6 @@ import KFileUpload from './KFileUpload';
 
 import './css/filemanager.css';
 
-const treeData = {
-  '/modules': {
-    path: '/modules',
-    type: 'folder',
-    isOpen: true,
-    isRoot: true,
-    children: [
-      '/modules/input', 
-      '/modules/output'
-    ]
-  },
-  '/modules/input': {
-    path: '/modules/input',
-    type: 'folder',
-    isOpen: true,
-    children: [
-      '/modules/input/debug',
-      '/modules/input/mysql'
-    ]
-  },
-  '/modules/input/debug': {
-    path: '/modules/input/debug',
-    type: 'file',
-    content: 'The most basic module. Use this for testing. It will directly copy the input to the output without modification'
-  },  
-  '/modules/input/mysql': {
-    path: '/modules/input/mysql',
-    type: 'file',
-    content: 'Load data directly from a MySQL database'
-  },
-  '/modules/output': {
-    path: '/modules/output',
-    isOpen: true,
-    type: 'folder',
-    children: []
-  }
-};
-
 const getNodeLabel = (node) => {
   let splitter=node.path.split('/');
   return (splitter[splitter.length-1]);
@@ -74,16 +36,20 @@ export class KFileManager extends React.Component {
   constructor(props) {
     super(props);
 
+    this.backend="http://192.168.0.108:8080";
     this.dataTools=new KDataTools ();
 
     this.state={
       selected: null,
-      data: this.generateData (),
+      folders: {},
+      data: {},
       type: KFileManager.BACKEND_S3
     };
 
     this.onTreeNodeSelect=this.onTreeNodeSelect.bind(this);
     this.onToolbarItemClick=this.onToolbarItemClick.bind(this);    
+    this.apiData=this.apiData.bind(this);
+    this.apiListing=this.apiListing.bind(this);
   }
 
   /**
@@ -92,12 +58,98 @@ export class KFileManager extends React.Component {
   componentDidMount() {
     console.log ("componentDidMount()");
 
-    /*
-    this.setState ({
-      data: this.generateData ()
-    });
-    */
+    this.apiCall ("getfolders",this.apiData);
   }
+
+  /**
+   * https://developer.mozilla.org/en-US/docs/Web/API/Fetch_API/Using_Fetch
+   * {
+      method: 'POST', // *GET, POST, PUT, DELETE, etc.
+      mode: 'cors', // no-cors, *cors, same-origin
+      cache: 'no-cache', // *default, no-cache, reload, force-cache, only-if-cached
+      credentials: 'same-origin', // include, *same-origin, omit
+      headers: {
+       'Content-Type': 'application/json'       
+      },
+      redirect: 'follow', // manual, *follow, error
+      referrerPolicy: 'no-referrer', // no-referrer, *no-referrer-when-downgrade, origin, origin-when-cross-origin, same-origin, strict-origin, strict-origin-when-cross-origin, unsafe-url
+      body: JSON.stringify(data) // body data type must match "Content-Type" header
+    }
+   */
+  apiCall (aCall,aCallback) {
+    console.log ("apiCall ("+aCall+")");
+
+    fetch(this.backend+"/api/v1/"+aCall,{method: "GET"})
+      .then(res => res.json())
+      .then(
+        (result) => {
+          if (aCallback) {
+            aCallback (result);
+          } else {
+
+          }
+        },
+        // Note: it's important to handle errors here instead of a catch() block so that we 
+        // don't swallow exceptions from actual bugs in components.
+        (error) => {
+          this.setState({
+            isLoaded: false,
+            error: error
+          });
+        }
+      );
+  }
+
+  /**
+   * 
+   */
+  apiData (result) {
+    console.log ("apiData ()");
+    //console.log (result);
+
+    let root={
+      path: '/buckets',
+      type: 'folder',
+      isOpen: true,
+      isRoot: true,
+      children: []
+    };
+
+    let folderData = {
+      '/buckets': root
+    };
+
+    let buckets=result.data;
+
+    for (let i=0;i<buckets.length;i++) {
+      let newBucket={
+        path: "/buckets/"+buckets [i].name,
+        type: 'folder',
+        isopen: true
+      };
+ 
+      root.children.push (newBucket.path);
+      folderData [newBucket.path]=newBucket;
+    }
+
+    //console.log(JSON.stringify (folderData));
+
+    this.setState({
+      folders: folderData
+    });
+  }  
+
+  /**
+   * 
+   */
+  apiListing (result) {
+    console.log ("apiListing ()");
+    //console.log (result);
+
+    this.setState({      
+      data: result.data
+    });
+  }    
 
   /**
    *
@@ -136,19 +188,15 @@ export class KFileManager extends React.Component {
 
     let selected=null;
 
-    /*
-    if (anItem.type=='file') {
-      if (anItem.content) {
-        selected=anItem;
-      }
-    }
-    */
-
     selected=anItem;
 
     this.setState ({
       selected: selected
-    });    
+    },(e) => {
+      if (anItem.type=="folder") {
+        this.apiCall("getdata?bucket="+getNodeLabel (anItem),this.apiListing);
+      }
+    });
   }  
 
   /**
@@ -202,7 +250,7 @@ export class KFileManager extends React.Component {
             <KToolbarItem onClick={(e) => this.onToolbarItemClick (e,4)}><MdAddLocation /></KToolbarItem>
           </KToolbar>
 
-          <KTree classes="filetreeview" onSelect={this.onTreeNodeSelect} data={treeData} />
+          <KTree classes="filetreeview" onSelect={this.onTreeNodeSelect} data={this.state.folders} style={{overflowY: "auto"}}/>
 
           <KFileUpload />          
         </div>

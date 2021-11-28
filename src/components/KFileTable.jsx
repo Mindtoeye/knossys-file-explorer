@@ -41,6 +41,15 @@ export class KFileTable extends React.Component {
   /**
    *
    */
+  componentWillReceiveProps(nextProps) {
+    this.setState ({
+      data: nextProps.data
+    });
+  }  
+
+  /**
+   *
+   */
   onKeyDown (e) {
     console.log ("onKeyDown ("+e.keyCode+")");
 

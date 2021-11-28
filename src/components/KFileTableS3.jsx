@@ -11,12 +11,11 @@ import './css/filemanager.css';
 export class KFileTableS3 extends React.Component {
 
   // Change these to integers
-  static COL_NAME = 'column-name';
-  static COL_TYPE = 'column-type';
-  static COL_CREATED = 'column-created';
+  static COL_KEY = 'column-key';
+  static COL_BUCKET = 'column-bucket';
+  static COL_SIZE = 'column-size';
   static COL_MODIFIED = 'column-modified';
-  static COL_OWNER = 'column-owner';  
-
+  
   /**
    *
    */
@@ -37,6 +36,15 @@ export class KFileTableS3 extends React.Component {
     this.onMouseOver=this.onMouseOver.bind(this);
     this.onClick=this.onClick.bind(this);
   }
+
+  /**
+   *
+   */
+  componentWillReceiveProps(nextProps) {
+    this.setState ({
+      data: nextProps.data
+    });
+  }    
 
   /**
    *
@@ -139,7 +147,7 @@ export class KFileTableS3 extends React.Component {
 
     let keyCounter=0;
 
-    if (aColumn==KFileTableS3.COL_NAME) {
+    if (aColumn==KFileTableS3.COL_KEY) {
       for (let i=0;i<this.state.data.length;i++) {
         let fileItem=this.state.data [i];
         
@@ -153,13 +161,13 @@ export class KFileTableS3 extends React.Component {
           classes+=" kfileselected";
         }        
 
-        list.push(<div key={"fcell-"+(keyCounter+1)} className={classes} onMouseOver={(e) => this.onMouseOver(e,i)} onClick={(e) => this.onClick (e,i)}>{fileItem.name}</div>); 
+        list.push(<div key={"fcell-"+(keyCounter+1)} className={classes} onMouseOver={(e) => this.onMouseOver(e,i)} onClick={(e) => this.onClick (e,i)}>{fileItem.key}</div>); 
 
         keyCounter+=5;
       }
     }
 
-    if (aColumn==KFileTableS3.COL_TYPE) {
+    if (aColumn==KFileTableS3.COL_BUCKET) {
       for (let i=0;i<this.state.data.length;i++) {
         let fileItem=this.state.data [i];
 
@@ -173,13 +181,13 @@ export class KFileTableS3 extends React.Component {
           classes+=" kfileselected";
         } 
 
-        list.push(<div key={"fcell-"+(keyCounter+2)} className={classes} onMouseOver={(e) => this.onMouseOver(e,i)} onClick={(e) => this.onClick (e,i)}>{fileItem.type}</div>); 
+        list.push(<div key={"fcell-"+(keyCounter+2)} className={classes} onMouseOver={(e) => this.onMouseOver(e,i)} onClick={(e) => this.onClick (e,i)}>{fileItem.bucket}</div>); 
 
         keyCounter+=5;
       }      
     }
 
-    if (aColumn==KFileTableS3.COL_CREATED) {
+    if (aColumn==KFileTableS3.COL_SIZE) {
       for (let i=0;i<this.state.data.length;i++) {
         let fileItem=this.state.data [i];
 
@@ -193,7 +201,7 @@ export class KFileTableS3 extends React.Component {
           classes+=" kfileselected";
         } 
 
-        list.push(<div key={"fcell-"+(keyCounter+3)} className={classes} onMouseOver={(e) => this.onMouseOver(e,i)} onClick={(e) => this.onClick (e,i)}>{fileItem.created}</div>); 
+        list.push(<div key={"fcell-"+(keyCounter+3)} className={classes} onMouseOver={(e) => this.onMouseOver(e,i)} onClick={(e) => this.onClick (e,i)}>{fileItem.size}</div>); 
 
         keyCounter+=5;
       }      
@@ -219,26 +227,6 @@ export class KFileTableS3 extends React.Component {
       }      
     }
 
-    if (aColumn==KFileTableS3.COL_OWNER) {
-      for (let i=0;i<this.state.data.length;i++) {
-        let fileItem=this.state.data [i];
-
-        let classes="kfilecell";
-
-        if (fileItem.highlighted==true) {
-          classes+=" kfilehighlighted";
-        }
-
-        if (fileItem.selected==true) {
-          classes+=" kfileselected";
-        }
-
-        list.push(<div key={"fcell-"+(keyCounter+5)} className={classes} onMouseOver={(e) => this.onMouseOver(e,i)} onClick={(e) => this.onClick (e,i)}>{fileItem.owner}</div>); 
-
-        keyCounter+=5;
-      }      
-    }
-
     return (list);
   }
  
@@ -247,38 +235,32 @@ export class KFileTableS3 extends React.Component {
    */
   render () {
 
-    let nameColumn=this.createFileList(KFileTableS3.COL_NAME);
-    let typeColumn=this.createFileList(KFileTableS3.COL_TYPE);
-    let createdColumn=this.createFileList(KFileTableS3.COL_CREATED);
+    let keyColumn=this.createFileList(KFileTableS3.COL_KEY);
+    let bucketColumn=this.createFileList(KFileTableS3.COL_BUCKET);
+    let sizeColumn=this.createFileList(KFileTableS3.COL_SIZE);
     let modifiedColumn=this.createFileList(KFileTableS3.COL_MODIFIED);
-    let ownerColumn=this.createFileList(KFileTableS3.COL_OWNER);
 
     return (<div tabIndex="0" className="kfilemanager-table" onKeyDown={this.onKeyDown} onKeyUp={this.onKeyUp}>
       <div className="kfilecolumn">
-        <div className="kfileheader">Name</div>
-        {nameColumn}
+        <div className="kfileheader">Key</div>
+        {keyColumn}
         <div className="kfilepadding">&nbsp;</div>
       </div>
       <div className="kfilecolumn">
-        <div className="kfileheader">Type</div>
-        {typeColumn}
+        <div className="kfileheader">Bucket</div>
+        {bucketColumn}
         <div className="kfilepadding">&nbsp;</div>
       </div>          
       <div className="kfilecolumn">          
-        <div className="kfileheader">Created</div>
-        {createdColumn}
+        <div className="kfileheader">Size</div>
+        {sizeColumn}
         <div className="kfilepadding">&nbsp;</div>
       </div>          
       <div className="kfilecolumn">          
         <div className="kfileheader">Modified</div>
         {modifiedColumn}
         <div className="kfilepadding">&nbsp;</div>
-      </div>          
-      <div className="kfilecolumn">          
-        <div className="kfileheader">Owner</div>
-        {ownerColumn}
-        <div className="kfilepadding">&nbsp;</div>
-      </div>          
+      </div>
     </div>);
   }
 }

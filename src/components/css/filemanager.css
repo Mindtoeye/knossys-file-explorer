@@ -84,6 +84,7 @@
   padding: 4px;
   overflow: hidden;
   border-bottom: 1px solid #545353;
+  white-space: nowrap;
 }
 
 .kfilehighlighted {
