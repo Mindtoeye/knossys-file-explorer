@@ -19,17 +19,16 @@ import com.amazonaws.services.s3.model.ListObjectsV2Result;
 import com.amazonaws.services.s3.model.S3ObjectSummary;
 
 import java.util.List;
-import java.util.ArrayList;
 
 import org.apache.log4j.Logger;
 
 import javax.json.Json;
 import javax.json.JsonArrayBuilder;
-import javax.json.JsonObject;
 import javax.json.JsonObjectBuilder;
-import javax.json.JsonReader;
 
 /**
+ * https://docs.aws.amazon.com/code-samples/latest/catalog/code-catalog-java.html
+ * 
  * @author Martin van Velsen <vvelsen@knossys.com>
  */
 @WebServlet(urlPatterns = { "/api/v1/*" }, loadOnStartup = 1, asyncSupported = true)
@@ -38,13 +37,7 @@ public class Knossys extends BaseService {
 	private static final long serialVersionUID = -5505838591578283382L;
 	
 	private static Logger M_log = Logger.getLogger(Knossys.class);
-	
-  private ArrayList<ArrayList<String>> data=new ArrayList<ArrayList<String>>();
-  
-  private ServletTools sTools=new ServletTools ();
-  
-  private String targetBucket="cmu-gallery";
-  
+	      
   private AWSCredentials basicSessionCredentials = null;
   	  	
 	/**
@@ -54,8 +47,6 @@ public class Knossys extends BaseService {
 	@Override
 	public void init(ServletConfig sConfig) {
 		M_log.info ("init ()");
-
-		//config.context = sConfig.getServletContext();
 		
 		basicSessionCredentials = getCredentials();
 	}
@@ -117,8 +108,9 @@ public class Knossys extends BaseService {
 		}
 		
     //>--------------------------------------------------------------		
-			
-		// The S3 equivalent of getting folders (buckets)
+					
+		// https://docs.aws.amazon.com/code-samples/latest/catalog/code-catalog-java.html
+		// The S3 equivalent of getting folders (buckets)		
     if (request.indexOf("/api/v1/getfolders") != -1) {
       
       JsonObjectBuilder builder=Json.createObjectBuilder();
@@ -131,10 +123,8 @@ public class Knossys extends BaseService {
       AmazonS3 s3Client = AmazonS3ClientBuilder.standard().withCredentials(new AWSStaticCredentialsProvider(basicSessionCredentials)).withRegion(Regions.US_EAST_1).build();
       
       List<Bucket> buckets = s3Client.listBuckets();
-      //System.out.println("Your {S3} buckets are:");
-      for (Bucket b : buckets) {
-        //System.out.println("* " + b.getName());
-        
+      
+      for (Bucket b : buckets) {        
         JsonObjectBuilder aBucket=Json.createObjectBuilder();
         
         aBucket.add("created",b.getCreationDate().toString());
@@ -150,19 +140,16 @@ public class Knossys extends BaseService {
 		
     //>--------------------------------------------------------------    
         
+    // https://docs.aws.amazon.com/code-samples/latest/catalog/code-catalog-java.html    
     if (request.indexOf("/api/v1/getdata") != -1) {                  
       String bucket = req.getParameter("bucket");
-      
+            
       AmazonS3 s3Client = AmazonS3ClientBuilder.standard().withCredentials(new AWSStaticCredentialsProvider(basicSessionCredentials)).withRegion(Regions.US_EAST_1).build();
             
       System.out.println("The {S3} bucket contents for "+bucket+" are:");
 
       ListObjectsV2Result result = s3Client.listObjectsV2(bucket);
-      
-      if (result.isTruncated()==true) {
-        System.out.println ("Info: result truncated");
-      }
-      
+            
       JsonObjectBuilder builder=Json.createObjectBuilder();
       
       builder.add("return", "objects");
@@ -173,9 +160,7 @@ public class Knossys extends BaseService {
       
       List<S3ObjectSummary> objects = result.getObjectSummaries();
       
-      for (S3ObjectSummary os : objects) {
-        System.out.println("Key: " + os.getKey() + ", bucket: " + os.getBucketName() + ", size: " + os.getSize() + ", Modified: " + os.getLastModified().toString());
-        
+      for (S3ObjectSummary os : objects) {        
         JsonObjectBuilder aBucket=Json.createObjectBuilder();
         
         aBucket.add("key",os.getKey());

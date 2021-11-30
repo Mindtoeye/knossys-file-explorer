@@ -1,0 +1,22 @@
+
+.waitholder {
+  position: relative;
+  flex: 1;
+  /* background: black; */
+  height: 98%;
+}
+
+.waitsvg {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  margin: auto;  
+
+  width: 100px;
+  height: 100px;
+
+  display :inline-block;
+  color:  #cdc9c9;
+}

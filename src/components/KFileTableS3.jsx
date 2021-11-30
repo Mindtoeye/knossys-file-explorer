@@ -1,7 +1,35 @@
+/*
+
+Code  Name  Opt-in Status
+us-east-2   US East (Ohio)  Not required
+us-east-1   US East (N. Virginia)   Not required
+us-west-1   US West (N. California)   Not required
+us-west-2   US West (Oregon)  Not required
+af-south-1  Africa (Cape Town)  Required
+ap-east-1   Asia Pacific (Hong Kong)  Required
+ap-south-1  Asia Pacific (Mumbai)   Not required
+ap-northeast-3  Asia Pacific (Osaka)  Not required
+ap-northeast-2  Asia Pacific (Seoul)  Not required
+ap-southeast-1  Asia Pacific (Singapore)  Not required
+ap-southeast-2  Asia Pacific (Sydney)   Not required
+ap-northeast-1  Asia Pacific (Tokyo)  Not required
+ca-central-1  Canada (Central)  Not required
+eu-central-1  Europe (Frankfurt)  Not required
+eu-west-1   Europe (Ireland)  Not required
+eu-west-2   Europe (London)   Not required
+eu-south-1  Europe (Milan)  Required
+eu-west-3   Europe (Paris)  Not required
+eu-north-1  Europe (Stockholm)  Not required
+me-south-1  Middle East (Bahrain)   Required
+sa-east-1   South America (São Paulo)   Not required
+
+*/
+
 import React from "react";
 import ReactDOM from "react-dom";
 
 import KDataTools from './utils/KDataTools';
+import KWaitLoader from './KWaitLoader';
 
 import './css/filemanager.css';
 
@@ -40,11 +68,13 @@ export class KFileTableS3 extends React.Component {
   /**
    *
    */
-  componentWillReceiveProps(nextProps) {
-    this.setState ({
-      data: nextProps.data
-    });
-  }    
+  componentDidUpdate(prevProps) {    
+    if (this.props.data !== prevProps.data) {
+      this.setState ({
+        data: this.props.data
+      });
+    }
+  }
 
   /**
    *
@@ -234,6 +264,13 @@ export class KFileTableS3 extends React.Component {
    *
    */
   render () {
+    if (!this.state.data) {
+      return (<KWaitLoader/>);
+    }
+
+    if (this.state.data.length==0) {
+      return (<KWaitLoader/>);      
+    }
 
     let keyColumn=this.createFileList(KFileTableS3.COL_KEY);
     let bucketColumn=this.createFileList(KFileTableS3.COL_BUCKET);

@@ -32,7 +32,7 @@ class DryDock extends Component {
    */
   componentDidMount () {
     this.appManager.addApplication ({
-      title: "Knossys Analysis Pipeline Editor",
+      title: "Knossys Cloud File Manager",
       type: "window",
       width: 929,
       height: 662,

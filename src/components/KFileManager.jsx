@@ -6,8 +6,9 @@ import { FaFile, FaFolder, FaFolderOpen, FaAws } from 'react-icons/fa';
 import { MdAddLocation } from 'react-icons/md';
 import { IoMdAddCircleOutline } from 'react-icons/io';
 import { MdKeyboardArrowLeft, MdKeyboardArrowRight, MdKeyboardArrowUp, MdOutlineHome } from 'react-icons/md';
+import { BiLogOutCircle } from 'react-icons/bi';
 
-import { KTree, KButton, KToolbar, KToolbarItem } from '@knossys/knossys-ui-core';
+import { KTree, KButton, KToolbar, KToolbarItem, KSelect, KTextInput } from '@knossys/knossys-ui-core';
 
 import KDataTools from './utils/KDataTools';
 import KFileTable from './KFileTable';
@@ -40,9 +41,10 @@ export class KFileManager extends React.Component {
     this.dataTools=new KDataTools ();
 
     this.state={
+      configured: false,
       selected: null,
       folders: {},
-      data: {},
+      data: [],
       type: KFileManager.BACKEND_S3
     };
 
@@ -50,6 +52,7 @@ export class KFileManager extends React.Component {
     this.onToolbarItemClick=this.onToolbarItemClick.bind(this);    
     this.apiData=this.apiData.bind(this);
     this.apiListing=this.apiListing.bind(this);
+    this.serviceLogin=this.serviceLogin.bind(this);
   }
 
   /**
@@ -144,12 +147,11 @@ export class KFileManager extends React.Component {
    */
   apiListing (result) {
     console.log ("apiListing ()");
-    //console.log (result);
-
+   
     this.setState({      
       data: result.data
     });
-  }    
+  }
 
   /**
    *
@@ -184,14 +186,14 @@ export class KFileManager extends React.Component {
    */
   onTreeNodeSelect (anItem) {
     console.log ("onTreeNodeSelect ()");
-    console.log (anItem);
 
     let selected=null;
 
     selected=anItem;
 
     this.setState ({
-      selected: selected
+      selected: selected,
+      data: []
     },(e) => {
       if (anItem.type=="folder") {
         this.apiCall("getdata?bucket="+getNodeLabel (anItem),this.apiListing);
@@ -205,21 +207,59 @@ export class KFileManager extends React.Component {
   onToolbarItemClick (e,anItem) {
     console.log ("onToolbarItemClick ("+anItem+")");
 
-    if (this.props.onToolbarItemClick) {
-      this.props.onToolbarItemClick (anItem);
+    if (anItem=="logout") {
+      this.setState ({
+        configured: false
+      });
     }
   }
 
   /**
    *
    */
+  serviceLogin () {
+    console.log ("serviceLogin ()");
+
+    this.setState ({
+      configured: true
+    });
+  }
+
+  /**
+   *
+   */
+  generateConfigControls () {
+    return (<div className="file-blank-panel">
+      <div className="file-control-panel">
+      <div className="file-service-icon"><FaAws/></div>
+      <div className="file-label">Access key ID: </div>
+      <KTextInput size={KTextInput.REGULAR} style={{width: "100%"}}></KTextInput>
+      <div className="file-label">Secret access key:</div>
+      <KTextInput size={KTextInput.REGULAR} style={{width: "100%"}}></KTextInput>
+      <KButton onClick={(e) => this.serviceLogin (e)} style={{margin: "5px"}}>Ok</KButton>
+      </div>      
+    </div>);
+  }
+
+  /**
+   *
+   */
   render () {
+    if (this.state.configured==false) {
+      return (this.generateConfigControls ());
+    }
+
+    let filecontrols;
     let filetable;
     let source="K";
 
     if (this.state.type==KFileManager.BACKEND_S3) {
       filetable=<KFileTableS3 data={this.state.data}/>;
       source=<FaAws/>;
+
+      filecontrols=<div className="file-controls">
+      <div style={{padding: "5px", fontSize: "12pt"}}>Region: </div><KSelect size={KSelect.SMALL} />  
+      </div>
     } else {
       filetable=<KFileTable data={this.state.data}/>;
       source="K";
@@ -229,6 +269,7 @@ export class KFileManager extends React.Component {
       <div className="file-address">
 
           <KToolbar style={{fontSize: "16pt"}}>
+            <KToolbarItem onClick={(e) => this.onToolbarItemClick (e,"logout")}><BiLogOutCircle /></KToolbarItem>
             <KToolbarItem onClick={(e) => this.onToolbarItemClick (e,5)}><MdKeyboardArrowLeft /></KToolbarItem>
             <KToolbarItem onClick={(e) => this.onToolbarItemClick (e,6)}><MdKeyboardArrowRight /></KToolbarItem>
             <KToolbarItem onClick={(e) => this.onToolbarItemClick (e,7)}><MdKeyboardArrowUp /></KToolbarItem>
@@ -255,6 +296,7 @@ export class KFileManager extends React.Component {
           <KFileUpload />          
         </div>
         <div className="file-list">
+        {filecontrols}
         {filetable}
         </div>
       </div>
