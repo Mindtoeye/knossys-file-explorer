@@ -1,32 +1,7 @@
-/*
-
-Code  Name  Opt-in Status
-us-east-2   US East (Ohio)  Not required
-us-east-1   US East (N. Virginia)   Not required
-us-west-1   US West (N. California)   Not required
-us-west-2   US West (Oregon)  Not required
-af-south-1  Africa (Cape Town)  Required
-ap-east-1   Asia Pacific (Hong Kong)  Required
-ap-south-1  Asia Pacific (Mumbai)   Not required
-ap-northeast-3  Asia Pacific (Osaka)  Not required
-ap-northeast-2  Asia Pacific (Seoul)  Not required
-ap-southeast-1  Asia Pacific (Singapore)  Not required
-ap-southeast-2  Asia Pacific (Sydney)   Not required
-ap-northeast-1  Asia Pacific (Tokyo)  Not required
-ca-central-1  Canada (Central)  Not required
-eu-central-1  Europe (Frankfurt)  Not required
-eu-west-1   Europe (Ireland)  Not required
-eu-west-2   Europe (London)   Not required
-eu-south-1  Europe (Milan)  Required
-eu-west-3   Europe (Paris)  Not required
-eu-north-1  Europe (Stockholm)  Not required
-me-south-1  Middle East (Bahrain)   Required
-sa-east-1   South America (São Paulo)   Not required
-
-*/
-
 import React from "react";
 import ReactDOM from "react-dom";
+
+import { FcFolder } from 'react-icons/fc';
 
 import KDataTools from './utils/KDataTools';
 import KWaitLoader from './KWaitLoader';
@@ -61,7 +36,8 @@ export class KFileTableS3 extends React.Component {
 
     this.onKeyDown=this.onKeyDown.bind (this);
     this.onKeyUp=this.onKeyUp.bind (this);
-    this.onMouseOver=this.onMouseOver.bind(this);
+    this.onMouseEnter=this.onMouseEnter.bind(this);
+    this.onMouseLeave=this.onMouseLeave.bind(this);
     this.onClick=this.onClick.bind(this);
   }
 
@@ -110,7 +86,7 @@ export class KFileTableS3 extends React.Component {
   /**
    * 
    */
-  onMouseOver (e,anIndex) {
+  onMouseEnter (e,anIndex) {
     let augmentedData=this.dataTools.deepCopy (this.state.data);
 
     for (let i=0;i<augmentedData.length;i++) {      
@@ -125,6 +101,24 @@ export class KFileTableS3 extends React.Component {
       data: augmentedData
     });
   }
+
+  /**
+   * 
+   */
+  onMouseLeave (e,anIndex) {    
+
+    let augmentedData=this.dataTools.deepCopy (this.state.data);
+
+    for (let i=0;i<augmentedData.length;i++) {      
+      if (anIndex==i) {
+        augmentedData [i].highlighted=false;  
+      }
+    }
+
+    this.setState ({
+      data: augmentedData
+    });
+  }  
 
   /**
    * 
@@ -170,7 +164,7 @@ export class KFileTableS3 extends React.Component {
    */
   createFileList (aColumn) {
     let list=[];
-
+    let fType;
     let date=new Date();
     let today=date.getDate();
     let todayString=date.toDateString();
@@ -189,9 +183,11 @@ export class KFileTableS3 extends React.Component {
 
         if (fileItem.selected==true) {
           classes+=" kfileselected";
-        }        
+        }     
 
-        list.push(<div key={"fcell-"+(keyCounter+1)} className={classes} onMouseOver={(e) => this.onMouseOver(e,i)} onClick={(e) => this.onClick (e,i)}>{fileItem.key}</div>); 
+        fType=<div className="kfiletype"><FcFolder/></div>;
+
+        list.push(<div key={"fcell-"+(keyCounter+1)} className={classes} onMouseLeave={(e) => this.onMouseLeave(e,i)} onMouseEnter={(e) => this.onMouseEnter(e,i)} onClick={(e) => this.onClick (e,i)}>{fType}{fileItem.key}</div>); 
 
         keyCounter+=5;
       }
@@ -211,7 +207,7 @@ export class KFileTableS3 extends React.Component {
           classes+=" kfileselected";
         } 
 
-        list.push(<div key={"fcell-"+(keyCounter+2)} className={classes} onMouseOver={(e) => this.onMouseOver(e,i)} onClick={(e) => this.onClick (e,i)}>{fileItem.bucket}</div>); 
+        list.push(<div key={"fcell-"+(keyCounter+2)} className={classes} onMouseLeave={(e) => this.onMouseLeave(e,i)} onMouseEnter={(e) => this.onMouseEnter(e,i)} onClick={(e) => this.onClick (e,i)}>{fileItem.bucket}</div>); 
 
         keyCounter+=5;
       }      
@@ -231,7 +227,7 @@ export class KFileTableS3 extends React.Component {
           classes+=" kfileselected";
         } 
 
-        list.push(<div key={"fcell-"+(keyCounter+3)} className={classes} onMouseOver={(e) => this.onMouseOver(e,i)} onClick={(e) => this.onClick (e,i)}>{fileItem.size}</div>); 
+        list.push(<div key={"fcell-"+(keyCounter+3)} className={classes} onMouseLeave={(e) => this.onMouseLeave(e,i)} onMouseEnter={(e) => this.onMouseEnter(e,i)} onClick={(e) => this.onClick (e,i)}>{fileItem.size}</div>); 
 
         keyCounter+=5;
       }      
@@ -251,7 +247,7 @@ export class KFileTableS3 extends React.Component {
           classes+=" kfileselected";
         } 
 
-        list.push(<div key={"fcell-"+(keyCounter+4)} className={classes} onMouseOver={(e) => this.onMouseOver(e,i)} onClick={(e) => this.onClick (e,i)}>{fileItem.modified}</div>); 
+        list.push(<div key={"fcell-"+(keyCounter+4)} className={classes} onBlur={(e) => this.onBlur(e,1)} onMouseLeave={(e) => this.onMouseLeave(e,i)} onMouseEnter={(e) => this.onMouseEnter(e,i)} onClick={(e) => this.onClick (e,i)}>{fileItem.modified}</div>); 
 
         keyCounter+=5;
       }      

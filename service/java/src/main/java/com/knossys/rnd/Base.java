@@ -2,9 +2,9 @@ package com.knossys.rnd;
 
 import java.io.IOException;
 import java.io.Writer;
+import java.util.logging.Logger;
 
 import org.apache.commons.codec.binary.Base64;
-import org.apache.log4j.Logger;
 
 /**
  * @author vvelsen
@@ -15,15 +15,8 @@ public class Base {
 	private String name = "Unknown";
 
 	public static String lastError = "All's well";
-	private Logger logger = Logger.getLogger(Base.class);
+	private static Logger M_log = Logger.getLogger(Base.class.getName());
 	public static Writer logOut = null;
-
-	/**
-	 * 
-	 */
-	protected void setLogger(Logger aLogger) {
-		logger = aLogger;
-	}
 
 	/**
 	 * 
@@ -57,7 +50,7 @@ public class Base {
 	 * @param aMessage
 	 */
 	protected void debug(String aMessage) {
-		logger.info(aMessage);
+		M_log.info(aMessage);
 
 		if (Base.logOut != null) {
 			try {

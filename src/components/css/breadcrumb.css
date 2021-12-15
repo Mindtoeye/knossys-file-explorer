@@ -1,62 +1,36 @@
 .kbreadcrumb {
-  margin-right:30px;
+  margin-right: 4px;
+  margin-left: 4px;
   padding-left: 7px;
+  /* border: 1px inset #4a4a4a; */
+  /* border-radius: 4px; */
+  flex: 1;
+  background: #303030;
 }
 
-.kbreadcrumb ol > li {        
-  display: table-cell;
-  height: 30px;        
-  position: relative;
-  padding: 0px;
-  margin: 0px;
-  text-align: center;
-  border: 1px solid #d68a3a;
-  min-width: 100px;      
-  background: #545454;
+.kbreadcrumb .kbreaseparator {
+  float: left;
+  font-size: 18pt;
+  padding-top: 1px;
+  margin-top: 1px;
 }
 
-.kbreadcrumb ol > li > div {         
-  position:relative;        
-  line-height: 30px; /* equal to the list item's height */
-  height:100%;
-  width: 100%;
-}
-
-.kbreadcrumb ol>li:hover {
-  background-color: #d68a3a;
+.kbreadcrumb .kbreadelement {
+  float: left;
+  margin: 2px;
+  margin-right: 4px;
+  margin-top: 4px;
+  /* line-height: 14pt; */
+  /* border: 1px solid grey; */
+  /* background: #565656; */
   cursor: pointer;
-  color: white;
+  padding-left: 2px;
+  padding-top: 2px;
+  padding-right: 2px;
+  padding-bottom: 2px;
 }
 
-.kbreadcrumb ol {
-  display: table;
-  width: 100%;
-  padding: 0px;
-  margin: 0px;
-  position: relative;
+.kbreadcrumb .kbreadelement:hover {
+  background: #565656;
 }
 
-.kbreadcrumb ol > li > div:after, ol > li > div:before {
-  content:"";
-  display:inline-block;        
-  border-width: 16px;
-  border-style: solid;
-  width: 0px;
-  height: 0px;
-  left: 100%;
-  top: -1px;        
-  position: absolute;        
-  z-index: 1;
-}
-
-.kbreadcrumb ol > li > div:after, ol > li:hover > div:before {
-  border-color: transparent transparent transparent #d68a3a;
-}
-
-.kbreadcrumb ol > li > div:before {
-  border-width: 14px;
-  display: block;
-  border-color: transparent transparent transparent #545454;
-  z-index: 2;
-  top:1px;
-}

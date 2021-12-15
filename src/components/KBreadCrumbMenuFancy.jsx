@@ -1,13 +1,11 @@
 import React, { Component } from 'react';
 
-import { BiChevronRight } from 'react-icons/bi';
-
-import './css/breadcrumb.css';
+import './css/breadcrumbfancy.css';
 
 /**
  * 
  */
-class KBreadCrumbMenu extends Component {
+class KBreadCrumbMenuFancy extends Component {
 
   /**
    *
@@ -45,13 +43,11 @@ class KBreadCrumbMenu extends Component {
     let crumbs=[];
 
     let splitter=clean.split ("/");
- 
-    let crumbKey=0;
 
     for (let i=0;i<splitter.length;i++) {
-      crumbs.push (<div className="kbreaseparator" key={"crumb-"+crumbKey}><BiChevronRight/></div>);
-      crumbs.push (<div className="kbreadelement" key={"crumb-"+crumbKey+1}>{splitter [i]}</div>);
-      crumbKey+=2;
+      crumbs.push (<li key={"crumb-"+i}>
+        <div>{splitter [i]}</div>
+      </li>);
     }    
 
     return (crumbs);
@@ -70,11 +66,13 @@ class KBreadCrumbMenu extends Component {
     let sourceElements=this.createCrumbTrail(source);
 
     return (
-      <div className="kbreadcrumb">
-        {sourceElements}
+      <div className="kbreadcrumbfancy">
+        <ol>
+          {sourceElements}
+        </ol>
       </div>
     );
   }
 }
 
-export default KBreadCrumbMenu;
+export default KBreadCrumbMenuFancy;

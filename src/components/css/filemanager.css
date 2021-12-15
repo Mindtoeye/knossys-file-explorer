@@ -3,9 +3,9 @@
   flex: 1;
   background: #404040;
   color: #cdc9c9;
-
   display: flex;
   flex-direction: column;
+  /*overflow-x: auto;*/
 }
 
 .file-address {
@@ -35,10 +35,11 @@
 
 .file-tree {
   flex: 0;
-  background: #504e4e;
+  background: #424242;
   min-width: 200px;
   display: flex;
   flex-direction: column;
+  border-right: 1px solid #5a5a5a;
 }
 
 .filetreeview {
@@ -50,12 +51,14 @@
   font-family: Arial, Verdana;
   font-size: 8pt;
   overflow-y: scroll;
-  overflow-x: hidden;
+  overflow-x: auto;
+  background: #343434;
 }
 
 .kfilemanager-table {
   display: flex;
   flex-direction: row;
+  overflow-x: auto;
 }
 
 .kfilerow {
@@ -85,14 +88,19 @@
   overflow: hidden;
   border-bottom: 1px solid #545353;
   white-space: nowrap;
+  line-height: 12pt;
 }
 
 .kfilehighlighted {
-  background: #5e5e5e;
+  background: #464343;
+  /* color: black; */
+  /* font-weight: bold;*/
 }
 
 .kfileselected {
-  background: grey;
+  background: #666666;
+  /* color: black; */
+  /* font-weight: bold;*/
 }
 
 .kfilepadding {
@@ -145,4 +153,10 @@
 
 .file-label {
   padding: 5px;
+}
+
+.kfiletype {
+  font-size: 12pt;
+  float: left;
+  margin-right: 2px;
 }

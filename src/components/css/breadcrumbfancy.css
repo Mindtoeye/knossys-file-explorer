@@ -1,0 +1,62 @@
+.kbreadcrumbfancy {
+  margin-right:30px;
+  padding-left: 7px;
+}
+
+.kbreadcrumbfancy ol > li {        
+  display: table-cell;
+  height: 30px;        
+  position: relative;
+  padding: 0px;
+  margin: 0px;
+  text-align: center;
+  border: 1px solid #d68a3a;
+  min-width: 100px;      
+  background: #545454;
+}
+
+.kbreadcrumbfancy ol > li > div {         
+  position:relative;        
+  line-height: 30px; /* equal to the list item's height */
+  height:100%;
+  width: 100%;
+}
+
+.kbreadcrumbfancy ol>li:hover {
+  background-color: #d68a3a;
+  cursor: pointer;
+  color: white;
+}
+
+.kbreadcrumbfancy ol {
+  display: table;
+  width: 100%;
+  padding: 0px;
+  margin: 0px;
+  position: relative;
+}
+
+.kbreadcrumbfancy ol > li > div:after, ol > li > div:before {
+  content:"";
+  display:inline-block;        
+  border-width: 16px;
+  border-style: solid;
+  width: 0px;
+  height: 0px;
+  left: 100%;
+  top: -1px;        
+  position: absolute;        
+  z-index: 1;
+}
+
+.kbreadcrumbfancy ol > li > div:after, ol > li:hover > div:before {
+  border-color: transparent transparent transparent #d68a3a;
+}
+
+.kbreadcrumbfancy ol > li > div:before {
+  border-width: 14px;
+  display: block;
+  border-color: transparent transparent transparent #545454;
+  z-index: 2;
+  top:1px;
+}

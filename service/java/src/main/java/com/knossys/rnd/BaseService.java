@@ -12,14 +12,6 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.log4j.Logger;
-
-import com.amazonaws.SdkClientException;
-import com.amazonaws.auth.AWSCredentials;
-import com.amazonaws.auth.BasicAWSCredentials;
-import com.amazonaws.auth.BasicSessionCredentials;
-import com.amazonaws.util.StringUtils;
-
 import java.lang.management.ManagementFactory;
 import java.lang.management.RuntimeMXBean;
 import java.net.HttpURLConnection;
@@ -27,6 +19,7 @@ import java.net.URL;
 import java.util.Enumeration;
 import java.util.Map;
 import java.util.Set;
+import java.util.logging.Logger;
 
 /**
  * @author Martin van Velsen <vvelsen@knossys.com>
@@ -34,7 +27,7 @@ import java.util.Set;
 public class BaseService extends HttpServlet {
 	
 	private static final long serialVersionUID = 1L;
-	private static Logger logger = Logger.getLogger(BaseService.class);
+	private static Logger M_log = Logger.getLogger(BaseService.class.getName());
 
 	private Boolean allowInsecureConnections = false;
 		
@@ -42,35 +35,10 @@ public class BaseService extends HttpServlet {
 	 * @param aMessage
 	 */
 	protected void debug(String aMessage) {
-		logger.info(aMessage);
+		M_log.info(aMessage);
 		//System.out.println(aMessage);
 	}
 
-	public AWSCredentials getCredentials() {
-	  logger.info ("getCredentials ()");
-	  
-	  String accessKey = System.getProperty("AWS_ACCESS_KEY_ID");
-	  
-	  if (accessKey == null) {
-	    logger.info ("Unable to load access key, trying alternative ...");
-	    accessKey = System.getProperty("ALTERNATE_ACCESS_KEY_ENV_VAR");
-	  }
-	  String secretKey = System.getProperty("AWS_SECRET_ACCESS_KEY");
-	  if (secretKey == null) {
-	    logger.info ("Unable to load secret key, trying alternative ...");
-	    secretKey = System.getProperty("ALTERNATE_SECRET_KEY_ENV_VAR");
-	  }
-	  accessKey = StringUtils.trim(accessKey);
-	  secretKey = StringUtils.trim(secretKey);
-	  String sessionToken = StringUtils.trim(System.getenv("AWS_SESSION_TOKEN_ENV_VAR"));
-	  
-	  if (StringUtils.isNullOrEmpty(accessKey) || StringUtils.isNullOrEmpty(secretKey)) {
-	    throw new SdkClientException(
-	        "Unable to load AWS credentials from environment variables ");
-	  }
-	  return sessionToken == null ? new BasicAWSCredentials(accessKey, secretKey) : new BasicSessionCredentials(accessKey, secretKey, sessionToken);
-	}
-	
 	/**
 	 * 
 	 */

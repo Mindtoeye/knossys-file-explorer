@@ -17,10 +17,19 @@ import com.amazonaws.services.s3.AmazonS3ClientBuilder;
 import com.amazonaws.services.s3.model.Bucket;
 import com.amazonaws.services.s3.model.ListObjectsV2Result;
 import com.amazonaws.services.s3.model.S3ObjectSummary;
+import com.box.sdk.BoxAPIConnection;
+import com.box.sdk.BoxConfig;
+import com.box.sdk.BoxFolder;
+import com.box.sdk.BoxItem;
+import com.box.sdk.EncryptionAlgorithm;
+import com.box.sdk.JWTEncryptionPreferences;
+import com.knossys.rnd.box.BoxConnector;
+import com.knossys.rnd.s3.S3Connector;
 
 import java.util.List;
+import java.util.logging.Logger;
 
-import org.apache.log4j.Logger;
+//import org.apache.log4j.Logger;
 
 import javax.json.Json;
 import javax.json.JsonArrayBuilder;
@@ -36,9 +45,14 @@ public class Knossys extends BaseService {
 	
 	private static final long serialVersionUID = -5505838591578283382L;
 	
-	private static Logger M_log = Logger.getLogger(Knossys.class);
-	      
-  private AWSCredentials basicSessionCredentials = null;
+	private static Logger M_log = Logger.getLogger(Knossys.class.getName());
+	
+	/*
+  private S3Connector sConnector=new S3Connector ();
+  private BoxConnector bConnector = new BoxConnector ();
+  */
+  
+  private CredentialInterface connector=null;
   	  	
 	/**
 	 * @param config
@@ -48,7 +62,7 @@ public class Knossys extends BaseService {
 	public void init(ServletConfig sConfig) {
 		M_log.info ("init ()");
 		
-		basicSessionCredentials = getCredentials();
+    connector=new S3Connector ();
 	}
 
 	/**
@@ -101,6 +115,19 @@ public class Knossys extends BaseService {
 
 		String request = req.getRequestURI();
 		
+    //>--------------------------------------------------------------
+
+    if (request.indexOf("/api/v1/setauthcode") != -1) {
+      String token=req.getParameter("code");
+      if (token.isEmpty()==false) {
+        connector.setAuthToken (token);
+        connector.login();
+      } else {
+        return ("{ \"result\" : \"fail\" , \"data\" : \"null\"}");
+      }
+      return ("{ \"result\" : \"success\" , \"data\" : \"null\"}");
+    }		
+		
 		//>--------------------------------------------------------------
 
 		if (request.indexOf("/api/v1/status") != -1) {
@@ -113,67 +140,31 @@ public class Knossys extends BaseService {
 		// The S3 equivalent of getting folders (buckets)		
     if (request.indexOf("/api/v1/getfolders") != -1) {
       
-      JsonObjectBuilder builder=Json.createObjectBuilder();
-      
-      builder.add("return", "buckets");
-      builder.add("request", "/api/v1/getfolders");
-      
-      JsonArrayBuilder dataBuilder=Json.createArrayBuilder();
-                          
-      AmazonS3 s3Client = AmazonS3ClientBuilder.standard().withCredentials(new AWSStaticCredentialsProvider(basicSessionCredentials)).withRegion(Regions.US_EAST_1).build();
-      
-      List<Bucket> buckets = s3Client.listBuckets();
-      
-      for (Bucket b : buckets) {        
-        JsonObjectBuilder aBucket=Json.createObjectBuilder();
-        
-        aBucket.add("created",b.getCreationDate().toString());
-        aBucket.add("name",b.getName());
-        
-        dataBuilder.add(aBucket);               
+      if (connector==null) {
+        JsonObjectBuilder builder=Json.createObjectBuilder();
+        builder.add("status", "error");
+        builder.add("message", "No credentials available");
+        return (builder.build().toString());
       }
-      
-      builder.add("data", dataBuilder);
-      
-      return (builder.build().toString());
+            
+      return (connector.getFolders ());
     }   		
 		
     //>--------------------------------------------------------------    
         
     // https://docs.aws.amazon.com/code-samples/latest/catalog/code-catalog-java.html    
-    if (request.indexOf("/api/v1/getdata") != -1) {                  
-      String bucket = req.getParameter("bucket");
-            
-      AmazonS3 s3Client = AmazonS3ClientBuilder.standard().withCredentials(new AWSStaticCredentialsProvider(basicSessionCredentials)).withRegion(Regions.US_EAST_1).build();
-            
-      System.out.println("The {S3} bucket contents for "+bucket+" are:");
-
-      ListObjectsV2Result result = s3Client.listObjectsV2(bucket);
-            
-      JsonObjectBuilder builder=Json.createObjectBuilder();
+    if (request.indexOf("/api/v1/getdata") != -1) {
       
-      builder.add("return", "objects");
-      builder.add("request", "/api/v1/getdata");
-      builder.add("truncated", result.isTruncated());
-      
-      JsonArrayBuilder dataBuilder=Json.createArrayBuilder();      
-      
-      List<S3ObjectSummary> objects = result.getObjectSummaries();
-      
-      for (S3ObjectSummary os : objects) {        
-        JsonObjectBuilder aBucket=Json.createObjectBuilder();
-        
-        aBucket.add("key",os.getKey());
-        aBucket.add("bucket",os.getBucketName());
-        aBucket.add("size",os.getSize());
-        aBucket.add("modified",os.getLastModified().toString());
-        
-        dataBuilder.add(aBucket);          
+      if (connector==null) {
+        JsonObjectBuilder builder=Json.createObjectBuilder();
+        builder.add("status", "error");
+        builder.add("message", "No credentials available");
+        return (builder.build().toString());
       }      
-            
-      builder.add("data", dataBuilder);
       
-      return (builder.build().toString());
+      String bucket=req.getParameter("bucket");
+          
+      return (connector.getData(bucket));
     }
     
     //>--------------------------------------------------------------    
